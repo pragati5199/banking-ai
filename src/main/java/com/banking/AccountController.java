@@ -15,6 +15,11 @@ public class AccountController {
 
     @Autowired
     AccountService accountService;
+
+    @Autowired
+    TransactionService transactionService;
+
+
     @GetMapping
     public List<Account> getAllAccounts(){
         return accountService.getAllAccounts();
@@ -42,4 +47,8 @@ public class AccountController {
         return accountService.deleteById(id);
     }
 
+    @PostMapping("/transaction")
+    public Transaction transfer(@RequestBody Transaction transaction){
+        return transactionService.transferMoney(transaction);
+    }
 }

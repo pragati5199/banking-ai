@@ -27,6 +27,10 @@ public class AccountService {
         return accountRepository.findById(id);
     }
 
+    public Optional<Account> getAccountByAccNumber(String accNumber){
+        return accountRepository.findByAccountNumber(accNumber);
+    }
+
     public ResponseEntity<Void> deleteById(Long id){
 
         getAccountById(id)
