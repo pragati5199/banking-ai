@@ -1,5 +1,6 @@
 package com.banking;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class AccountController {
     }
 
     @PostMapping
-    public Account save(@RequestBody Account account){
+    public Account save(@Valid @RequestBody Account account){
         return accountService.saveAccount(account);
     }
 
