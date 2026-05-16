@@ -15,20 +15,25 @@ public class AccountService {
     @Autowired
     AccountRepository accountRepository;
 
-    public List<Account> getAllAccounts(){
-        return accountRepository.findAll();
+    public List<AccountResponseDTO> getAllAccounts(){
+
+            return accountRepository.findAll()
+                    .stream()
+                    .map(AccountMapper::toResponseDTO)
+                    .toList();
+
     }
 
-    public Account saveAccount(Account account){
-        return accountRepository.save(account);
+    public AccountResponseDTO saveAccount(AccountRequestDTO account){
+        return AccountMapper.toResponseDTO(accountRepository.save(AccountMapper.toEntity(account)));
     }
 
-    public Optional<Account> getAccountById(Long id){
-        return accountRepository.findById(id);
+    public Optional<AccountResponseDTO> getAccountById(Long id){
+        return accountRepository.findById(id).map((AccountMapper::toResponseDTO));
     }
 
-    public Optional<Account> getAccountByAccNumber(String accNumber){
-        return accountRepository.findByAccountNumber(accNumber);
+    public Optional<AccountResponseDTO> getAccountByAccNumber(String accNumber){
+        return accountRepository.findByAccountNumber(accNumber).map((AccountMapper::toResponseDTO));
     }
 
     public ResponseEntity<Void> deleteById(Long id){
@@ -41,15 +46,13 @@ public class AccountService {
         return ResponseEntity.noContent().build();
     }
 
-    public Account updateById(Long id, Account account) {
+    public AccountResponseDTO updateById(Long id, AccountRequestDTO account) {
 
-        Optional<Account> ac = getAccountById(id);
-        if (!ac.isEmpty()){
+        Optional<Account> ac = accountRepository.findById(id);
+        if (ac.isPresent()){
             ac.get().setAccountType(account.getAccountType());
             ac.get().setName(account.getName());
-
-            saveAccount(ac.get());
-            return ac.get();
+            return AccountMapper.toResponseDTO(accountRepository.save(ac.get()));
 
         }else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found");

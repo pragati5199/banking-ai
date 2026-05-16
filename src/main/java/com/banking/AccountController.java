@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/accounts")
@@ -22,24 +21,24 @@ public class AccountController {
 
 
     @GetMapping
-    public List<Account> getAllAccounts(){
+    public List<AccountResponseDTO> getAllAccounts(){
         return accountService.getAllAccounts();
     }
 
     @PostMapping
-    public Account save(@Valid @RequestBody Account account){
+    public AccountResponseDTO save(@Valid @RequestBody AccountRequestDTO account){
         return accountService.saveAccount(account);
     }
 
     @GetMapping("/{id}")
-    public Account getAccountById(@PathVariable Long id){
+    public AccountResponseDTO getAccountById(@PathVariable Long id){
         return accountService.getAccountById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Account not found"));
     }
 
     @PutMapping("/{id}")
-    public Account updateById(@PathVariable Long id,@RequestBody Account account){
+    public AccountResponseDTO updateById(@PathVariable Long id,@RequestBody AccountRequestDTO account){
         return accountService.updateById(id,account);
     }
 

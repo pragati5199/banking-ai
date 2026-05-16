@@ -2,8 +2,6 @@ package com.banking;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -18,7 +16,7 @@ public class TransactionService {
     TransactionRepository transactionRepository;
 
     @Autowired
-    AccountService accountService;
+    AccountRepository accountRepository;
 
     public Transaction saveTransaction(Transaction transaction){
 
@@ -31,11 +29,11 @@ public class TransactionService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Transfer amount must be greater tha 0");
         } else {
 
-            Account sender = accountService.getAccountByAccNumber(transaction.getSenderAccountNumber())
+            Account sender = accountRepository.findByAccountNumber(transaction.getSenderAccountNumber())
                     .orElseThrow(() -> new ResponseStatusException(
                             HttpStatus.NOT_FOUND, "Sender Account not found"));
 
-            Account receiver = accountService.getAccountByAccNumber(transaction.getReceiverAccountNumber())
+            Account receiver = accountRepository.findByAccountNumber(transaction.getReceiverAccountNumber())
                     .orElseThrow(() -> new ResponseStatusException(
                             HttpStatus.NOT_FOUND, "Receiver Account not found"));
             if (sender.getBalance().compareTo(transaction.getTransAmount()) < 0){
@@ -43,10 +41,10 @@ public class TransactionService {
             }
 
             sender.setBalance(sender.getBalance().subtract(transaction.getTransAmount()));
-            accountService.saveAccount(sender);
+            accountRepository.save(sender);
 
             receiver.setBalance(receiver.getBalance().add(transaction.getTransAmount()));
-            accountService.saveAccount(receiver);
+            accountRepository.save(receiver);
 
             transaction.setTransStatus(TransactionStatus.SUCCESS);
             transaction.setTransTimeStamp(LocalDateTime.now());
