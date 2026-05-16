@@ -3,7 +3,9 @@ package com.banking;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +24,11 @@ public class AccountController {
 
 
     @GetMapping
-    public Page<AccountResponseDTO>getAllAccounts(Pageable page){
-        return accountService.getAllAccounts(page);
+    public Page<AccountResponseDTO>getAllAccounts(@RequestParam(defaultValue = "0") int page,
+                                                  @RequestParam(defaultValue = "10") int size,
+                                                  @RequestParam(defaultValue = "id") String sortBy){
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return accountService.getAllAccounts(pageable);
     }
 
     @PostMapping
